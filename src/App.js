@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { ProfileSelection } from './ProfileSelection';
-import { AdminDashboard } from './AdminDashboard';
+import AdminDashboard from './AdminDashboard';
 import { Login } from './Login';
 
 function App() {
@@ -16,23 +16,41 @@ function App() {
         setIsLoggedIn(true);
     };
 
+    const Home = () => {
+        const navigate = useNavigate();
+
+        useEffect(() => {
+            if (selectedProfile) {
+                navigate(`/${selectedProfile.name.toLowerCase()}/login`);
+            }
+        }, [selectedProfile, navigate]);
+
+        return (
+            <ProfileSelection onProfileSelect={handleProfileSelect} />
+        );
+    };
+
+    const ProtectedRoute = ({ children, profileName }) => {
+        if (!selectedProfile || selectedProfile.name !== profileName) {
+            return <Navigate to="/" />;
+        }
+        if (!isLoggedIn) {
+            return <Navigate to={`/${profileName.toLowerCase()}/login`} />;
+        }
+        return children;
+    };
+
     return (
         <Router>
             <Routes>
+                {/* Home Route */}
+                <Route path="/" element={<Home />} />
+
+                {/* Login Route */}
                 <Route
-                    path="/"
+                    path="/:profile/login"
                     element={
                         selectedProfile ? (
-                            <Navigate to={`/${selectedProfile.name.toLowerCase()}/login`} />
-                        ) : (
-                            <ProfileSelection onProfileSelect={handleProfileSelect} />
-                        )
-                    }
-                />
-                <Route
-                    path="/admin/login"
-                    element={
-                        selectedProfile?.name === 'Admin' ? (
                             <Login
                                 profile={selectedProfile}
                                 onLoginSuccess={handleLoginSuccess}
@@ -42,43 +60,20 @@ function App() {
                         )
                     }
                 />
+
+                {/* Admin Dashboard Routes */}
                 <Route
-                    path="/customer/login"
+                    path="/admin/*"
                     element={
-                        selectedProfile?.name === 'Customer' ? (
-                            <Login
-                                profile={selectedProfile}
-                                onLoginSuccess={handleLoginSuccess}
-                            />
-                        ) : (
-                            <Navigate to="/" />
-                        )
+                        <ProtectedRoute profileName="Admin">
+                            <Routes>
+                                <Route path="dashboard" element={<AdminDashboard />} />
+                            </Routes>
+                        </ProtectedRoute>
                     }
                 />
-                <Route
-                    path="/staff/login"
-                    element={
-                        selectedProfile?.name === 'Staff' ? (
-                            <Login
-                                profile={selectedProfile}
-                                onLoginSuccess={handleLoginSuccess}
-                            />
-                        ) : (
-                            <Navigate to="/" />
-                        )
-                    }
-                />
-                <Route
-                    path="/admin/dashboard"
-                    element={
-                        isLoggedIn && selectedProfile?.name === 'Admin' ? (
-                            <AdminDashboard />
-                        ) : (
-                            <Navigate to="/" />
-                        )
-                    }
-                />
-                {/* Add additional role-specific routes if needed */}
+
+                {/* Add additional roles and dashboards here */}
             </Routes>
         </Router>
     );

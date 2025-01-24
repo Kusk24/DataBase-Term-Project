@@ -3,37 +3,46 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>React Profile App</title>
+  <title>React Profile Selection</title>
+  <link rel="stylesheet" href="mainPage.css">
   <style>
     body {
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
-      background-color: #f0f0f0;
+      background: #1e1e1e; /* Plain dark background */
+      color: #f0f0f0;
     }
-    nav {
-      background-color: #333;
-      color: white;
-      padding: 1em;
+
+    #root {
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+    }
+
+    footer {
       text-align: center;
+      margin: 20px 0;
+      font-size: 0.9em;
+      color: #a5a5a5;
     }
-    nav a {
-      color: white;
-      margin: 0 1em;
+
+    footer a {
+      color: #1dbf73;
       text-decoration: none;
     }
-    #root {
-      padding: 2em;
+
+    footer a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
+
 <body>
-  <nav>
-    <a href="#">Home</a>
-    <a href="#">Profile</a>
-    <a href="#">Settings</a>
-  </nav>
   <div id="root"></div>
-  <!-- React will render the app here -->
+
+  <footer>
+    &copy; 2025 <a href="#">Game Rental</a>. All rights reserved.
+  </footer>
 </body>
 </html>
