@@ -3,6 +3,11 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'r
 import { ProfileSelection } from './ProfileSelection';
 import AdminDashboard from './AdminDashboard';
 import { Login } from './Login';
+import { CustomerRentPage } from './CustomerRentPage';
+import { CustomerCurrentlyRent } from './CustomerCurrentlyRent';
+import { CustomerHistory } from './CustomerHistory';
+import { CustomerProfile } from './CustomerProfile';
+import { CustomerDashboard } from './CustomerDashboard';
 
 function App() {
     const [selectedProfile, setSelectedProfile] = useState(null);
@@ -16,6 +21,11 @@ function App() {
         setIsLoggedIn(true);
     };
 
+    const handleSignOut = () => {
+        setSelectedProfile(null);
+        setIsLoggedIn(false);
+    };
+
     const Home = () => {
         const navigate = useNavigate();
 
@@ -25,9 +35,7 @@ function App() {
             }
         }, [selectedProfile, navigate]);
 
-        return (
-            <ProfileSelection onProfileSelect={handleProfileSelect} />
-        );
+        return <ProfileSelection onProfileSelect={handleProfileSelect} />;
     };
 
     const ProtectedRoute = ({ children, profileName }) => {
@@ -73,7 +81,32 @@ function App() {
                     }
                 />
 
-                {/* Add additional roles and dashboards here */}
+                {/* Customer Pages */}
+                {/* Customer Dashboard with Nested Routes */}
+                <Route
+                    path="/customer/*"
+                    element={
+                        <ProtectedRoute profileName="Customer">
+                            <CustomerDashboard
+                                onSignOut={handleSignOut}
+                                profile={selectedProfile}
+                            />
+                        </ProtectedRoute>
+                    }
+                >
+                    <Route path="rentPage" element={<CustomerRentPage />} />
+                    <Route path="currentlyRent" element={<CustomerCurrentlyRent />} />
+                    <Route path="history" element={<CustomerHistory />} />
+                    <Route
+                        path="profile"
+                        element={
+                            <CustomerProfile
+                                profile={selectedProfile}
+                                onSignOut={handleSignOut}
+                            />
+                        }
+                    />
+                </Route>
             </Routes>
         </Router>
     );
