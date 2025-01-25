@@ -9,9 +9,22 @@ export const Login = ({ profile, onLoginSuccess }) => {
     const navigate = useNavigate();
 
     const handleLogin = () => {
-        if (username === 'admin' && password === 'password' && profile.name === 'Admin') {
+        // Simulating role-based login validation
+        if (
+            (username === 'admin' && password === 'password' && profile.name === 'Admin') ||
+            (username === 'customer' && password === 'password' && profile.name === 'Customer') ||
+            (username === 'staff' && password === 'password' && profile.name === 'Staff')
+        ) {
             onLoginSuccess();
-            navigate('/admin/dashboard');
+
+            // Navigate to respective dashboard or page based on role
+            if (profile.name === 'Admin') {
+                navigate('/admin/dashboard');
+            } else if (profile.name === 'Customer') {
+                navigate('/customer/rentPage');
+            } else if (profile.name === 'Staff') {
+                navigate('/staff/dashboard');
+            }
         } else {
             setError('Invalid credentials or role mismatch');
         }
