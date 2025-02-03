@@ -180,12 +180,16 @@ export const CustomerCurrentlyRent = () => {
                                     variant="contained"
                                     onClick={() => handleDueDate(game.name)}
                                     sx={{
-                                        background: '#d9534f',
+                                        background: 'linear-gradient(45deg, #d9534f, #c9302c)', // red gradient
                                         color: '#fff',
                                         fontWeight: 'bold',
-                                        textTransform: 'none',
+                                        padding: '12px',
+                                        borderRadius: '8px',
+                                        width: '100px',
+                                        transition: 'transform 0.2s',
                                         '&:hover': {
-                                            background: '#c9302c',
+                                            transform: 'scale(1.05)',
+                                            background: 'linear-gradient(45deg, #c9302c, #d9534f)', // reversed gradient on hover
                                         },
                                     }}
                                 >
@@ -195,17 +199,22 @@ export const CustomerCurrentlyRent = () => {
                                     variant="contained"
                                     onClick={() => handleReportProblem(game)}
                                     sx={{
-                                        background: '#f0ad4e',
+                                        background: 'linear-gradient(45deg, #f0ad4e, #ec971f)', // yellow/orange gradient
                                         color: '#fff',
                                         fontWeight: 'bold',
-                                        textTransform: 'none',
+                                        padding: '12px',
+                                        borderRadius: '8px',
+                                        width: '180px',
+                                        transition: 'transform 0.2s',
                                         '&:hover': {
-                                            background: '#ec971f',
+                                            transform: 'scale(1.05)',
+                                            background: 'linear-gradient(45deg, #ec971f, #f0ad4e)', // reversed gradient on hover
                                         },
                                     }}
                                 >
                                     Report Problem
                                 </Button>
+
                             </Box>
                         </CardContent>
                     </Card>

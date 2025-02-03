@@ -32,12 +32,16 @@ export const CustomerProfile = ({ profile, onSignOut }) => {
                 variant="contained"
                 onClick={onSignOut}
                 sx={{
-                    background: '#1dbf73',
-                    color: '#ffffff',
+                    background: 'linear-gradient(45deg, #d9534f, #c9302c)', // red gradient
+                    color: '#fff',
                     fontWeight: 'bold',
-                    textTransform: 'none',
+                    padding: '12px',
+                    borderRadius: '8px',
+                    width: '100px',
+                    transition: 'transform 0.2s',
                     '&:hover': {
-                        background: '#17a2b8',
+                        transform: 'scale(1.05)',
+                        background: 'linear-gradient(45deg, #c9302c, #d9534f)', // reversed gradient on hover
                     },
                 }}
             >

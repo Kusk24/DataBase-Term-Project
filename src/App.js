@@ -22,7 +22,7 @@ function App() {
     };
 
     const handleSignOut = () => {
-        setSelectedProfile(null);
+        setSelectedProfile('Customer');
         setIsLoggedIn(false);
     };
 

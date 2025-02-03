@@ -92,7 +92,7 @@ export const Login = ({ profile, onLoginSuccess }) => {
                     >
                         Login
                     </Button>
-                    <Link
+                    {/* <Link
                         href="/forgot-password"
                         variant="body2"
                         sx={{
@@ -106,7 +106,7 @@ export const Login = ({ profile, onLoginSuccess }) => {
                         }}
                     >
                         Forgot Password?
-                    </Link>
+                    </Link> */}
                 </Box>
                 {error && (
                     <Alert

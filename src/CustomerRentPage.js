@@ -247,10 +247,17 @@ const filteredGames = games.filter((game) =>
                 <Button
                   variant="contained"
                   sx={{
-                    background: "#1dbf73",
-                    color: "#ffffff",
-                    fontWeight: "bold",
-                    "&:hover": { background: "#17a2b8" },
+                      background: 'linear-gradient(45deg, #1dbf73, #17a2b8)',
+                      color: 'white',
+                      fontWeight: 'bold',
+                      padding: '12px',
+                      borderRadius: '8px',
+                      width: '100px', // Apply width here
+                      transition: 'transform 0.2s',
+                      '&:hover': {
+                          transform: 'scale(1.05)',
+                          background: 'linear-gradient(45deg, #17a2b8, #1dbf73)',
+                      },
                   }}
                   onClick={() => handleRentClick(game)}
                 >
@@ -262,7 +269,6 @@ const filteredGames = games.filter((game) =>
         ))}
       </Box>
 
-      {/* Rent Modal */}
       {/* Rent Modal */}
       <Modal open={rentStep !== null} onClose={handleCancel}>
         <Box

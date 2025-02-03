@@ -1,112 +1,90 @@
 import React, { useState } from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
-import { Box, Button } from '@mui/material';
+import { AppBar, Tabs, Tab, Box } from '@mui/material';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
+import HistoryIcon from '@mui/icons-material/History';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 export const CustomerDashboard = ({ onSignOut, profile }) => {
-    const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState('rentPage');
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState(0);
+  const tabNames = ['rentPage', 'currentlyRent', 'history', 'profile'];
 
-    const handleNavigation = (tabName) => {
-        setActiveTab(tabName);
-        navigate(`/customer/${tabName}`);
-    };
+  const handleTabChange = (event, newValue) => {
+    setActiveTab(newValue);
+    navigate(`/customer/${tabNames[newValue]}`);
+  };
 
-    return (
-        <Box sx={{ width: '100%', minHeight: '100vh', bgcolor: '#1e1e1e', color: '#f0f0f0' }}>
-            {/* Header with Navigation Buttons */}
-            <Box
-                sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    gap: '20px',
-                    padding: '20px',
-                    backgroundColor: '#2c2c2c',
-                    boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.5)',
-                    borderRadius: '10px',
-                    margin: '20px auto',
-                    maxWidth: '800px',
-                }}
-            >
-                <Button
-                    onClick={() => handleNavigation('rentPage')}
-                    sx={{
-                        backgroundColor: activeTab === 'rentPage' ? '#1dbf73' : '#343a40',
-                        color: '#ffffff',
-                        fontWeight: 'bold',
-                        textTransform: 'none',
-                        padding: '10px 20px',
-                        borderRadius: '20px',
-                        '&:hover': {
-                            backgroundColor: '#1dbf73',
-                        },
-                    }}
-                >
-                    Rent Page
-                </Button>
-                <Button
-                    onClick={() => handleNavigation('currentlyRent')}
-                    sx={{
-                        backgroundColor: activeTab === 'currentlyRent' ? '#1dbf73' : '#343a40',
-                        color: '#ffffff',
-                        fontWeight: 'bold',
-                        textTransform: 'none',
-                        padding: '10px 20px',
-                        borderRadius: '20px',
-                        '&:hover': {
-                            backgroundColor: '#1dbf73',
-                        },
-                    }}
-                >
-                    Currently Rented
-                </Button>
-                <Button
-                    onClick={() => handleNavigation('history')}
-                    sx={{
-                        backgroundColor: activeTab === 'history' ? '#1dbf73' : '#343a40',
-                        color: '#ffffff',
-                        fontWeight: 'bold',
-                        textTransform: 'none',
-                        padding: '10px 20px',
-                        borderRadius: '20px',
-                        '&:hover': {
-                            backgroundColor: '#1dbf73',
-                        },
-                    }}
-                >
-                    History
-                </Button>
-                <Button
-                    onClick={() => handleNavigation('profile')}
-                    sx={{
-                        backgroundColor: activeTab === 'profile' ? '#1dbf73' : '#343a40',
-                        color: '#ffffff',
-                        fontWeight: 'bold',
-                        textTransform: 'none',
-                        padding: '10px 20px',
-                        borderRadius: '20px',
-                        '&:hover': {
-                            backgroundColor: '#1dbf73',
-                        },
-                    }}
-                >
-                    Profile
-                </Button>
-            </Box>
+  return (
+    <Box sx={{ width: '100%', minHeight: '100vh', bgcolor: '#1e1e1e', color: '#FFFFFF' }}>
+      {/* Top Navigation Bar */}
+      <AppBar 
+        position="static" 
+        sx={{
+          bgcolor: '#2c2c2c',
+          boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.7)',
+          borderRadius: '20px', // Rounded corners
+          margin: '20px auto',
+          maxWidth: '800px',
+          pt: 1,
+          pb: 1,
+          px: 2,
+        }}
+      >
+        <Tabs
+          value={activeTab}
+          onChange={handleTabChange}
+          variant="fullWidth"
+          textColor="inherit"
+          indicatorColor="secondary"
+          centered
+          sx={{
+            bgcolor: '#3a3a3a',
+            borderRadius: '15px', // Rounded corners for tabs
+          }}
+        >
+          {[
+            { label: "Rent Page", icon: <ShoppingCartIcon /> },
+            { label: "Currently Rented", icon: <LibraryBooksIcon /> },
+            { label: "History", icon: <HistoryIcon /> },
+            { label: "Profile", icon: <AccountCircleIcon /> }
+          ].map((tab, index) => (
+            <Tab
+              key={tab.label}
+              label={tab.label}
+              icon={tab.icon}
+              iconPosition="start"
+              sx={{
+                textTransform: 'none',
+                fontWeight: activeTab === index ? 'bold' : 'normal',
+                color: activeTab === index ? '#FFFFFF' : '#CCCCCC', // Pure white for active, light gray for inactive
+                background: activeTab === index ? 'rgba(29, 191, 115, 0.3)' : 'transparent', // Light green for active tab
+                borderRadius: '12px', // Rounded corners for tabs
+                transition: 'all 0.3s ease', // Smooth transitions
+                '&:hover': {
+                  background: 'rgba(29, 191, 115, 0.2)', // Hover effect
+                  color: '#FFFFFF',
+                },
+              }}
+            />
+          ))}
+        </Tabs>
+      </AppBar>
 
-            {/* Render the active page */}
-            <Box
-                sx={{
-                    maxWidth: '900px',
-                    margin: '0 auto',
-                    padding: '20px',
-                    boxShadow: '0px 6px 15px rgba(0, 0, 0, 0.5)',
-                    borderRadius: '12px',
-                    background: 'linear-gradient(145deg, #2b2b2b, #1e1e1e)',
-                }}
-            >
-                <Outlet />
-            </Box>
-        </Box>
-    );
+      {/* Page Content Area */}
+      <Box
+        sx={{
+          maxWidth: '900px',
+          margin: '0 auto',
+          padding: '20px',
+          boxShadow: '0px 6px 20px rgba(0, 0, 0, 0.6)',
+          borderRadius: '20px', // Rounded corners for content area
+          background: 'linear-gradient(145deg, #2b2b2b, #1e1e1e)',
+        }}
+      >
+        <Outlet />
+      </Box>
+    </Box>
+  );
 };
