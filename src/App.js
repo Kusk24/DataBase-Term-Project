@@ -10,7 +10,7 @@ import { CustomerProfile } from './CustomerProfile';
 import { CustomerDashboard } from './CustomerDashboard';
 
 function App() {
-    const [selectedProfile, setSelectedProfile] = useState(null);
+    const [selectedProfile, setSelectedProfile] = useState("customer");
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     const handleProfileSelect = (profile) => {
@@ -31,7 +31,7 @@ function App() {
 
         useEffect(() => {
             if (selectedProfile) {
-                navigate(`/${selectedProfile.name.toLowerCase()}/login`);
+                navigate(`/login`);
             }
         }, [selectedProfile, navigate]);
 
@@ -39,11 +39,8 @@ function App() {
     };
 
     const ProtectedRoute = ({ children, profileName }) => {
-        if (!selectedProfile || selectedProfile.name !== profileName) {
-            return <Navigate to="/" />;
-        }
         if (!isLoggedIn) {
-            return <Navigate to={`/${profileName.toLowerCase()}/login`} />;
+            return <Navigate to={`/login`} />;
         }
         return children;
     };
@@ -56,7 +53,7 @@ function App() {
 
                 {/* Login Route */}
                 <Route
-                    path="/:profile/login"
+                    path="/login"
                     element={
                         selectedProfile ? (
                             <Login

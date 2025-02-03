@@ -10,21 +10,10 @@ export const Login = ({ profile, onLoginSuccess }) => {
 
     const handleLogin = () => {
         // Simulating role-based login validation
-        if (
-            (username === 'admin' && password === 'password' && profile.name === 'Admin') ||
-            (username === 'customer' && password === 'password' && profile.name === 'Customer') ||
-            (username === 'staff' && password === 'password' && profile.name === 'Staff')
-        ) {
+        if (username === 'customer' && password === 'password') {
             onLoginSuccess();
 
-            // Navigate to respective dashboard or page based on role
-            if (profile.name === 'Admin') {
-                navigate('/admin/dashboard');
-            } else if (profile.name === 'Customer') {
-                navigate('/customer/rentPage');
-            } else if (profile.name === 'Staff') {
-                navigate('/staff/dashboard');
-            }
+            navigate('/customer/rentPage');
         } else {
             setError('Invalid credentials or role mismatch');
         }
@@ -44,7 +33,7 @@ export const Login = ({ profile, onLoginSuccess }) => {
                 }}
             >
                 <Typography variant="h4" gutterBottom sx={{ color: '#1dbf73' }}>
-                    Login as {profile.name}
+                    Login as Customer
                 </Typography>
                 <Box
                     component="form"
