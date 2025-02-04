@@ -241,7 +241,7 @@ const filteredGames = games.filter((game) =>
                 <strong>Platform:</strong> {game.platform}
               </Typography>
               <Typography variant="body2" sx={{ color: "#ffffff", marginBottom: "10px" }}>
-                <strong>Price:</strong> {game.price} BHD / day
+                <strong>Price:</strong> {game.price} Baht / day
               </Typography>
               <Box sx={{ textAlign: "center" }}>
                 <Button
@@ -290,7 +290,7 @@ const filteredGames = games.filter((game) =>
               <Typography>Minimum Age: {selectedGame.age}</Typography>
               <Typography>Genre: {selectedGame.genre}</Typography>
               <Typography>Platform: {selectedGame.platform}</Typography>
-              <Typography>Price: {selectedGame.price} BHD / day</Typography>
+              <Typography>Price: {selectedGame.price} Baht / day</Typography>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
                   label="Enter Return Date"
