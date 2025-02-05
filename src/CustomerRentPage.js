@@ -191,7 +191,7 @@ const filteredGames = games.filter((game) =>
     <Box sx={{ padding: "20px", color: "#f0f0f0", height: "100vh", overflowY: "auto" }}>
       {/* Page Header */}
       <Typography variant="h4" sx={{ marginBottom: "20px", color: "#1dbf73", textAlign: "center" }}>
-        Rent Games
+        Game Library
       </Typography>
 
       {/* Search Bar */}
