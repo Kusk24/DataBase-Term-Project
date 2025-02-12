@@ -7,4 +7,4 @@ customer -> Win Yu Maung
 
 using pgsql for database query
 html,css,js(react) for website
-django for backend
+flask for backend
