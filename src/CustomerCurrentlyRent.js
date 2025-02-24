@@ -1,302 +1,207 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-    Box,
-    Typography,
-    Button,
-    Card,
-    CardContent,
-    CardMedia,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    TextField,
-    MenuItem,
+  Box,
+  Typography,
+  Button,
+  Card,
+  CardContent,
+  CardMedia,
+  CircularProgress,
 } from '@mui/material';
+import ReportModal from './ReportModal';
 
 export const CustomerCurrentlyRent = () => {
-    const [rentedGames, setRentedGames] = useState([
-        {
-            id: 1,
-            name: 'God of War',
-            age: '18+',
-            genre: 'Adventure',
-            releaseDate: '2022-11-09',
-            platform: 'PS5/Xbox',
-            price: '35 BHD',
-            image: 'https://example.com/god-of-war.jpg',
-        },
-        {
-            id: 2,
-            name: 'Spider-Man',
-            age: '13+',
-            genre: 'Adventure',
-            releaseDate: '2023-10-20',
-            platform: 'PS5/Xbox',
-            price: '20 BHD',
-            image: 'https://example.com/spider-man.jpg',
-        },
-    ]);
+  // State for currently renting games (fetched from API)
+  const [rentedGames, setRentedGames] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-    const [open, setOpen] = useState(false);
-    const [selectedGame, setSelectedGame] = useState(null);
-    const [problemType, setProblemType] = useState('');
-    const [description, setDescription] = useState('');
-    const [file, setFile] = useState(null);
+  // Retrieve the logged-in customer data from localStorage
+  const storedCustomer = JSON.parse(localStorage.getItem('customer'));
+  const customerId = storedCustomer?.customer_id;
 
-    // Handles "Report Problem" button click
-    const handleReportProblem = (game) => {
-        setSelectedGame(game);
-        setOpen(true);
+  // States for the ReportModal dialog
+  const [open, setOpen] = useState(false);
+  const [selectedGame, setSelectedGame] = useState(null);
+  const [problemType, setProblemType] = useState('');
+  const [description, setDescription] = useState('');
+  const [file, setFile] = useState(null);
+
+  // Fetch currently renting games from the API endpoint
+  useEffect(() => {
+    const fetchRentedGames = async () => {
+      try {
+        const response = await fetch(`http://127.0.0.1:5000/rental/renting/${customerId}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch currently renting games');
+        }
+        const data = await response.json();
+        if (data.error) {
+          throw new Error(data.error);
+        }
+        setRentedGames(data);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
     };
 
-    // Closes the dialog and resets fields
-    const handleClose = () => {
-        setOpen(false);
-        setProblemType('');
-        setDescription('');
-        setFile(null);
-    };
+    fetchRentedGames();
+  }, [customerId]);
 
-    // Submits the problem
-    const handleSubmit = () => {
-        alert(
-            `Problem reported for ${selectedGame.name}. Problem Type: ${problemType}. Description: ${description}`
-        );
-        handleClose();
-    };
+  // Open the "Report Problem" dialog
+  const handleReportProblem = (game) => {
+    setSelectedGame(game);
+    setOpen(true);
+  };
 
-    // Displays the due date
-    const handleDueDate = (gameName) => {
-        alert(`The due date for ${gameName} is 15 days from the rent date.`);
-    };
+  // Close the dialog and reset its state
+  const handleClose = () => {
+    setOpen(false);
+    setProblemType('');
+    setDescription('');
+    setFile(null);
+  };
 
-    return (
-        <Box
-            sx={{
-                padding: '20px',
-                color: '#f0f0f0',
-                height: '100vh',
-                overflowY: 'auto',
-            }}
-        >
-            {/* Page Header */}
-            <Typography
-                variant="h4"
-                sx={{
-                    marginBottom: '20px',
-                    color: '#1dbf73',
-                    textAlign: 'center',
-                }}
-            >
-                Currently Rented Games
-            </Typography>
-
-            {/* List of Rented Games */}
-            <Box
-                sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '20px',
-                }}
-            >
-                {rentedGames.map((game) => (
-                    <Card
-                        key={game.id}
-                        sx={{
-                            background: '#2c2c2c',
-                            boxShadow: '0px 6px 15px rgba(0, 0, 0, 0.5)',
-                            borderRadius: '15px',
-                            overflow: 'hidden',
-                        }}
-                    >
-                        {/* Game Image */}
-                        <CardMedia
-                            component="img"
-                            height="140"
-                            image={game.image}
-                            alt={game.name}
-                            sx={{ objectFit: 'cover' }}
-                        />
-
-                        {/* Game Details */}
-                        <CardContent>
-                            <Typography
-                                variant="h6"
-                                sx={{
-                                    color: '#ffffff',
-                                    marginBottom: '10px',
-                                }}
-                            >
-                                {game.name}
-                            </Typography>
-                            <Typography
-                                variant="body2"
-                                sx={{
-                                    color: '#ffffff',
-                                    marginBottom: '5px',
-                                }}
-                            >
-                                <strong>Minimum Age:</strong> {game.age}
-                            </Typography>
-                            <Typography
-                                variant="body2"
-                                sx={{
-                                    color: '#ffffff',
-                                    marginBottom: '5px',
-                                }}
-                            >
-                                <strong>Genre:</strong> {game.genre}
-                            </Typography>
-                            <Typography
-                                variant="body2"
-                                sx={{
-                                    color: '#ffffff',
-                                    marginBottom: '5px',
-                                }}
-                            >
-                                <strong>Release Date:</strong> {game.releaseDate}
-                            </Typography>
-                            <Typography
-                                variant="body2"
-                                sx={{
-                                    color: '#ffffff',
-                                    marginBottom: '10px',
-                                }}
-                            >
-                                <strong>Platform:</strong> {game.platform}
-                            </Typography>
-
-                            {/* Buttons */}
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    justifyContent: 'center',
-                                    gap: '15px',
-                                    marginTop: '10px',
-                                }}
-                            >
-                                <Button
-                                    variant="contained"
-                                    onClick={() => handleDueDate(game.name)}
-                                    sx={{
-                                        background: 'linear-gradient(45deg, #d9534f, #c9302c)', // red gradient
-                                        color: '#fff',
-                                        fontWeight: 'bold',
-                                        padding: '12px',
-                                        borderRadius: '8px',
-                                        width: '100px',
-                                        transition: 'transform 0.2s',
-                                        '&:hover': {
-                                            transform: 'scale(1.05)',
-                                            background: 'linear-gradient(45deg, #c9302c, #d9534f)', // reversed gradient on hover
-                                        },
-                                    }}
-                                >
-                                    Due Date
-                                </Button>
-                                <Button
-                                    variant="contained"
-                                    onClick={() => handleReportProblem(game)}
-                                    sx={{
-                                        background: 'linear-gradient(45deg, #f0ad4e, #ec971f)', // yellow/orange gradient
-                                        color: '#fff',
-                                        fontWeight: 'bold',
-                                        padding: '12px',
-                                        borderRadius: '8px',
-                                        width: '180px',
-                                        transition: 'transform 0.2s',
-                                        '&:hover': {
-                                            transform: 'scale(1.05)',
-                                            background: 'linear-gradient(45deg, #ec971f, #f0ad4e)', // reversed gradient on hover
-                                        },
-                                    }}
-                                >
-                                    Report Problem
-                                </Button>
-
-                            </Box>
-                        </CardContent>
-                    </Card>
-                ))}
-            </Box>
-
-            {/* Dialog for Reporting Problem */}
-            <Dialog open={open} onClose={handleClose}>
-                <DialogTitle>Report Your Problem</DialogTitle>
-                <DialogContent>
-                    <Typography variant="body1" sx={{ marginBottom: '10px' }}>
-                        Game: {selectedGame?.name}
-                    </Typography>
-                    <TextField
-                        select
-                        label="Related Problem"
-                        fullWidth
-                        value={problemType}
-                        onChange={(e) => setProblemType(e.target.value)}
-                        sx={{ marginBottom: '15px' }}
-                    >
-                        <MenuItem value="Wrong Disc">Wrong Disc</MenuItem>
-                        <MenuItem value="Damaged Disc">Damaged Disc</MenuItem>
-                        <MenuItem value="Game Not Working">Game Not Working</MenuItem>
-                    </TextField>
-                    <TextField
-                        label="Description"
-                        multiline
-                        rows={4}
-                        fullWidth
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        sx={{ marginBottom: '15px' }}
-                    />
-                    <Box
-                        sx={{
-                            marginTop: '20px',
-                            padding: '20px',
-                            border: '2px dashed #1dbf73',
-                            borderRadius: '10px',
-                            textAlign: 'center',
-                        }}
-                    >
-                        <input
-                            type="file"
-                            hidden
-                            id="upload-file"
-                            onChange={(e) => setFile(e.target.files[0])}
-                        />
-                        <label htmlFor="upload-file" style={{ cursor: 'pointer', color: '#1dbf73' }}>
-                            Drag & Drop or Browse
-                        </label>
-                        {file && (
-                            <Typography variant="body2" sx={{ color: '#1dbf73', marginTop: '10px' }}>
-                                File: {file.name}
-                            </Typography>
-                        )}
-                    </Box>
-                </DialogContent>
-                <DialogActions>
-                    <Button
-                        onClick={handleClose}
-                        sx={{
-                            color: '#fff',
-                            background: '#d9534f',
-                            '&:hover': { background: '#c9302c' },
-                        }}
-                    >
-                        Cancel
-                    </Button>
-                    <Button
-                        onClick={handleSubmit}
-                        sx={{
-                            color: '#fff',
-                            background: '#1dbf73',
-                            '&:hover': { background: '#17a2b8' },
-                        }}
-                    >
-                        Submit
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        </Box>
+  // Handle submission of the report problem dialog
+  const handleSubmit = () => {
+    alert(
+      `Problem reported for ${selectedGame?.name || selectedGame?.game_name}. Problem Type: ${problemType}. Description: ${description}`
     );
+    handleClose();
+  };
+
+  // Dummy function for due date alert
+  const handleDueDate = (gameName) => {
+    alert(`The due date for ${gameName} is 15 days from the rent date.`);
+  };
+
+  if (loading) {
+    return (
+      <Box sx={{ textAlign: 'center', marginTop: '50px', color: '#f0f0f0' }}>
+        <Typography variant="h6">Loading...</Typography>
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box sx={{ textAlign: 'center', marginTop: '50px', color: '#f0f0f0' }}>
+        <Typography variant="h6" sx={{ color: 'red' }}>
+          Error: {error}
+        </Typography>
+      </Box>
+    );
+  }
+
+  return (
+    <Box sx={{ padding: '20px', color: '#f0f0f0', minHeight: '100vh', overflowY: 'auto' }}>
+      <Typography variant="h4" sx={{ marginBottom: '20px', color: '#1dbf73', textAlign: 'center' }}>
+        Currently Rented Games
+      </Typography>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        {rentedGames.length > 0 ? (
+          rentedGames.map((game) => (
+            <Card
+              key={game.rental_id}
+              sx={{
+                background: '#2c2c2c',
+                boxShadow: '0px 6px 15px rgba(0, 0, 0, 0.5)',
+                borderRadius: '15px',
+                overflow: 'hidden',
+              }}
+            >
+              {/* Game Image */}
+              <CardMedia
+                component="img"
+                height="140"
+                image={game.image_link || 'https://via.placeholder.com/140'}
+                alt={game.game_name || game.name}
+                sx={{ objectFit: 'cover' }}
+              />
+              {/* Game Details */}
+              <CardContent>
+                <Typography variant="h6" sx={{ color: '#ffffff', marginBottom: '10px' }}>
+                  {game.game_name || game.name}
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#ffffff', marginBottom: '5px' }}>
+                  <strong>Rent Date:</strong> {new Date(game.rent_date).toLocaleDateString()}
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#ffffff', marginBottom: '5px' }}>
+                  <strong>Due Date:</strong> {new Date(game.due_date).toLocaleDateString()}
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#ffffff', marginBottom: '10px' }}>
+                  <strong>Rental ID:</strong> {game.rental_id}
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#ffffff', marginBottom: '10px' }}>
+                  <strong>Status:</strong> {game.status}
+                </Typography>
+                <Box sx={{ display: 'flex', justifyContent: 'center', gap: '15px', marginTop: '10px' }}>
+                  <Button
+                    variant="contained"
+                    onClick={() => handleDueDate(game.game_name || game.name)}
+                    sx={{
+                      background: 'linear-gradient(45deg, #d9534f, #c9302c)',
+                      color: '#fff',
+                      fontWeight: 'bold',
+                      padding: '12px',
+                      borderRadius: '8px',
+                      width: '100px',
+                      transition: 'transform 0.2s',
+                      '&:hover': {
+                        transform: 'scale(1.05)',
+                        background: 'linear-gradient(45deg, #c9302c, #d9534f)',
+                      },
+                    }}
+                  >
+                    Due Date
+                  </Button>
+                  <Button
+                    variant="contained"
+                    onClick={() => handleReportProblem(game)}
+                    sx={{
+                      background: 'linear-gradient(45deg, #f0ad4e, #ec971f)',
+                      color: '#fff',
+                      fontWeight: 'bold',
+                      padding: '12px',
+                      borderRadius: '8px',
+                      width: '180px',
+                      transition: 'transform 0.2s',
+                      '&:hover': {
+                        transform: 'scale(1.05)',
+                        background: 'linear-gradient(45deg, #ec971f, #f0ad4e)',
+                      },
+                    }}
+                  >
+                    Report Problem
+                  </Button>
+                </Box>
+              </CardContent>
+            </Card>
+          ))
+        ) : (
+          <Typography variant="body1" sx={{ textAlign: 'center' }}>
+            No currently rented games found.
+          </Typography>
+        )}
+      </Box>
+
+      {/* Report Modal */}
+      <ReportModal
+        open={open}
+        selectedGame={selectedGame}
+        problemType={problemType}
+        description={description}
+        file={file}
+        onProblemTypeChange={setProblemType}
+        onDescriptionChange={setDescription}
+        onFileChange={setFile}
+        onClose={handleClose}
+        onSubmit={handleSubmit}
+      />
+    </Box>
+  );
 };
+
+export default CustomerCurrentlyRent;
