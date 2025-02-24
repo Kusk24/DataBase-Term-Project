@@ -174,7 +174,10 @@ export const CustomerRentPage = () => {
           >
             <CardMedia
               component="img"
-              height="180"
+              sx={{
+                height: "300px",     // or your desired height
+                objectFit: "contain",  // ensures the image fills the area, cropping if necessary
+              }}
               image={game.image_link}
               alt={game.game_name}
             />
