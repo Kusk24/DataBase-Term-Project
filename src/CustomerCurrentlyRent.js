@@ -1,3 +1,4 @@
+// CustomerCurrentlyRent.jsx
 import React, { useState, useEffect } from 'react';
 import {
   Box,
@@ -11,7 +12,7 @@ import {
 import ReportModal from './ReportModal';
 
 export const CustomerCurrentlyRent = () => {
-  // State for currently renting games (fetched from API)
+  // State for the renting games
   const [rentedGames, setRentedGames] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -20,15 +21,22 @@ export const CustomerCurrentlyRent = () => {
   const storedCustomer = JSON.parse(localStorage.getItem('customer'));
   const customerId = storedCustomer?.customer_id;
 
-  // States for the ReportModal dialog
+  // State for the report modal
   const [open, setOpen] = useState(false);
   const [selectedGame, setSelectedGame] = useState(null);
+
+  // States for the problem fields
   const [problemType, setProblemType] = useState('');
   const [description, setDescription] = useState('');
   const [file, setFile] = useState(null);
 
-  // Fetch currently renting games from the API endpoint
+  // Fetch the currently renting games from the API
   useEffect(() => {
+    if (!customerId) {
+      setError('No customer ID found. Please log in.');
+      setLoading(false);
+      return;
+    }
     const fetchRentedGames = async () => {
       try {
         const response = await fetch(`http://127.0.0.1:5000/rental/renting/${customerId}`);
@@ -40,43 +48,67 @@ export const CustomerCurrentlyRent = () => {
           throw new Error(data.error);
         }
         setRentedGames(data);
-        setLoading(false);
       } catch (err) {
         setError(err.message);
+      } finally {
         setLoading(false);
       }
     };
-
     fetchRentedGames();
   }, [customerId]);
 
-  // Open the "Report Problem" dialog
+  // Opens the "Report Problem" dialog
   const handleReportProblem = (game) => {
     setSelectedGame(game);
+    setProblemType('');    // reset
+    setDescription('');    // reset
+    setFile(null);         // reset
     setOpen(true);
   };
 
-  // Close the dialog and reset its state
+  // Closes the dialog
   const handleClose = () => {
     setOpen(false);
-    setProblemType('');
-    setDescription('');
-    setFile(null);
   };
 
-  // Handle submission of the report problem dialog
-  const handleSubmit = () => {
-    alert(
-      `Problem reported for ${selectedGame?.name || selectedGame?.game_name}. Problem Type: ${problemType}. Description: ${description}`
-    );
-    handleClose();
+  // Submits the problem to the backend
+  const handleSubmit = async () => {
+    if (!selectedGame || !selectedGame.rental_id) {
+      alert('No rental_id found.');
+      return;
+    }
+    try {
+      // POST /game_report
+      // Required: rental_id, reason, detail
+      // Optional: attachment
+      const payload = {
+        rental_id: selectedGame.rental_id,
+        reason: problemType,
+        detail: description,
+        attachment: file ? file.name : null,
+      };
+      const response = await fetch('http://127.0.0.1:5000/game_report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to submit report');
+      }
+      alert(data.message || 'Game reported');
+      handleClose();
+    } catch (err) {
+      alert(err.message);
+    }
   };
 
-  // Dummy function for due date alert
+  // Dummy function for due date
   const handleDueDate = (gameName) => {
     alert(`The due date for ${gameName} is 15 days from the rent date.`);
   };
 
+  // Render states
   if (loading) {
     return (
       <Box sx={{ textAlign: 'center', marginTop: '50px', color: '#f0f0f0' }}>
@@ -84,7 +116,6 @@ export const CustomerCurrentlyRent = () => {
       </Box>
     );
   }
-
   if (error) {
     return (
       <Box sx={{ textAlign: 'center', marginTop: '50px', color: '#f0f0f0' }}>
@@ -97,7 +128,10 @@ export const CustomerCurrentlyRent = () => {
 
   return (
     <Box sx={{ padding: '20px', color: '#f0f0f0', minHeight: '100vh', overflowY: 'auto' }}>
-      <Typography variant="h4" sx={{ marginBottom: '20px', color: '#1dbf73', textAlign: 'center' }}>
+      <Typography
+        variant="h4"
+        sx={{ marginBottom: '20px', color: '#1dbf73', textAlign: 'center' }}
+      >
         Currently Rented Games
       </Typography>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -112,18 +146,16 @@ export const CustomerCurrentlyRent = () => {
                 overflow: 'hidden',
               }}
             >
-              {/* Game Image */}
               <CardMedia
                 component="img"
                 height="140"
                 image={game.image_link || 'https://via.placeholder.com/140'}
-                alt={game.game_name || game.name}
+                alt={game.game_name || 'Game'}
                 sx={{ objectFit: 'cover' }}
               />
-              {/* Game Details */}
               <CardContent>
                 <Typography variant="h6" sx={{ color: '#ffffff', marginBottom: '10px' }}>
-                  {game.game_name || game.name}
+                  {game.game_name}
                 </Typography>
                 <Typography variant="body2" sx={{ color: '#ffffff', marginBottom: '5px' }}>
                   <strong>Rent Date:</strong> {new Date(game.rent_date).toLocaleDateString()}
@@ -140,7 +172,7 @@ export const CustomerCurrentlyRent = () => {
                 <Box sx={{ display: 'flex', justifyContent: 'center', gap: '15px', marginTop: '10px' }}>
                   <Button
                     variant="contained"
-                    onClick={() => handleDueDate(game.game_name || game.name)}
+                    onClick={() => handleDueDate(game.game_name)}
                     sx={{
                       background: 'linear-gradient(45deg, #d9534f, #c9302c)',
                       color: '#fff',
@@ -190,14 +222,14 @@ export const CustomerCurrentlyRent = () => {
       {/* Report Modal */}
       <ReportModal
         open={open}
+        onClose={handleClose}
         selectedGame={selectedGame}
         problemType={problemType}
-        description={description}
-        file={file}
         onProblemTypeChange={setProblemType}
+        description={description}
         onDescriptionChange={setDescription}
+        file={file}
         onFileChange={setFile}
-        onClose={handleClose}
         onSubmit={handleSubmit}
       />
     </Box>
