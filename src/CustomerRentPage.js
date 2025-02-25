@@ -51,16 +51,15 @@ export const CustomerRentPage = () => {
   // Called when user clicks "Rent" on a game card
   const handleRentClick = (game) => {
     setSelectedGame(game);
-    setRentStep(1); // start at step 1 in the modal
+    setRentStep(1); // open modal at step 1
   };
 
-  // Move forward in the steps
+  // Move forward in steps
   const handleNextStep = () => {
     if (rentStep === 1 && !returnDate) {
       alert("Please select a return date before proceeding.");
       return;
     }
-    // If we just finished step 1, calculate cost
     if (rentStep === 1) {
       const days = dayjs(returnDate).diff(dayjs(), "day");
       setTotalCost(selectedGame.price * days);
@@ -68,12 +67,12 @@ export const CustomerRentPage = () => {
     setRentStep((prev) => prev + 1);
   };
 
-  // Move backward in the steps
+  // Move backward in steps
   const handleBackStep = () => {
     setRentStep((prev) => prev - 1);
   };
 
-  // Cancel/close the modal
+  // Cancel/close the modal and reset states
   const handleCancel = () => {
     setRentStep(null);
     setSelectedGame(null);
@@ -83,7 +82,7 @@ export const CustomerRentPage = () => {
     setUploadedFile(null);
   };
 
-  // Helper to convert rating code to display text
+  // Helper to display rating text
   const getRatingDisplay = (rating) => {
     switch (rating) {
       case "E":
@@ -97,7 +96,6 @@ export const CustomerRentPage = () => {
     }
   };
 
-  // ---- LOADING STATE ----
   if (loading) {
     return (
       <Box
@@ -114,7 +112,6 @@ export const CustomerRentPage = () => {
     );
   }
 
-  // ---- ERROR STATE ----
   if (error) {
     return (
       <Box
@@ -132,11 +129,11 @@ export const CustomerRentPage = () => {
     );
   }
 
-  // ---- MAIN RENDER ----
   return (
     <Box sx={{ padding: "20px", color: "#f0f0f0", height: "100vh", overflowY: "auto" }}>
-      {/* Page Header */}
+      {/* Header */}
       <Typography variant="h4" sx={{ marginBottom: "20px", color: "#1dbf73", textAlign: "center" }}>
+        Game Rentals
       </Typography>
 
       {/* Search Bar */}
@@ -174,10 +171,7 @@ export const CustomerRentPage = () => {
           >
             <CardMedia
               component="img"
-              sx={{
-                height: "300px",     // or your desired height
-                objectFit: "contain",  // ensures the image fills the area, cropping if necessary
-              }}
+              sx={{ height: "300px", objectFit: "contain" }}
               image={game.image_link}
               alt={game.game_name}
             />
@@ -227,21 +221,23 @@ export const CustomerRentPage = () => {
       </Box>
 
       {/* Rent Modal */}
-      <RentModal
-        rentStep={rentStep}
-        selectedGame={selectedGame}
-        returnDate={returnDate}
-        setReturnDate={setReturnDate}
-        paymentMethod={paymentMethod}
-        setPaymentMethod={setPaymentMethod}
-        totalCost={totalCost}
-        setTotalCost={setTotalCost}
-        uploadedFile={uploadedFile}
-        setUploadedFile={setUploadedFile}
-        handleCancel={handleCancel}
-        handleNextStep={handleNextStep}
-        handleBackStep={handleBackStep}
-      />
+      {rentStep !== null && (
+        <RentModal
+          rentStep={rentStep}
+          selectedGame={selectedGame}
+          returnDate={returnDate}
+          setReturnDate={setReturnDate}
+          paymentMethod={paymentMethod}
+          setPaymentMethod={setPaymentMethod}
+          totalCost={totalCost}
+          setTotalCost={setTotalCost}
+          uploadedFile={uploadedFile}
+          setUploadedFile={setUploadedFile}
+          handleCancel={handleCancel}
+          handleNextStep={handleNextStep}
+          handleBackStep={handleBackStep}
+        />
+      )}
     </Box>
   );
 };
