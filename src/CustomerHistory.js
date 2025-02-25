@@ -21,7 +21,6 @@ export const CustomerHistory = () => {
   const [error, setError] = useState(null);
 
   // Retrieve logged-in customer data from localStorage.
-  // Assume that the customer object was saved as JSON under the key "customer"
   const storedCustomer = JSON.parse(localStorage.getItem('customer'));
   const customerId = storedCustomer?.customer_id;
 
@@ -49,8 +48,10 @@ export const CustomerHistory = () => {
 
   // Filter history based on the search term
   const filteredHistory = history.filter((item) => {
+    // Include game_name in the combined string so it can be searched as well
     const combined = `
       ${item.game_id}
+      ${item.game_name}
       ${item.rent_date}
       ${item.due_date}
       ${item.rental_id}
@@ -119,6 +120,7 @@ export const CustomerHistory = () => {
           <TableHead>
             <TableRow>
               <TableCell sx={{ color: '#1dbf73', fontWeight: 'bold' }}>Game ID</TableCell>
+              <TableCell sx={{ color: '#1dbf73', fontWeight: 'bold' }}>Game Name</TableCell>
               <TableCell sx={{ color: '#1dbf73', fontWeight: 'bold' }}>Rent Date</TableCell>
               <TableCell sx={{ color: '#1dbf73', fontWeight: 'bold' }}>Due Date</TableCell>
               <TableCell sx={{ color: '#1dbf73', fontWeight: 'bold' }}>Rental ID</TableCell>
@@ -129,6 +131,7 @@ export const CustomerHistory = () => {
             {filteredHistory.map((item) => (
               <TableRow key={item.rental_id}>
                 <TableCell sx={{ color: '#f0f0f0' }}>{item.game_id}</TableCell>
+                <TableCell sx={{ color: '#f0f0f0' }}>{item.game_name}</TableCell>
                 <TableCell sx={{ color: '#f0f0f0' }}>{item.rent_date}</TableCell>
                 <TableCell sx={{ color: '#f0f0f0' }}>{item.due_date}</TableCell>
                 <TableCell sx={{ color: '#f0f0f0' }}>{item.rental_id}</TableCell>
@@ -138,7 +141,7 @@ export const CustomerHistory = () => {
 
             {filteredHistory.length === 0 && (
               <TableRow>
-                <TableCell colSpan={5} sx={{ textAlign: 'center', color: '#f0f0f0' }}>
+                <TableCell colSpan={6} sx={{ textAlign: 'center', color: '#f0f0f0' }}>
                   No rentals found.
                 </TableCell>
               </TableRow>
