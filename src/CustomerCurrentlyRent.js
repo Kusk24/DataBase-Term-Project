@@ -147,12 +147,14 @@ export const CustomerCurrentlyRent = () => {
               }}
             >
               <CardMedia
-                component="img"
-                height="140"
-                image={game.image_link || 'https://via.placeholder.com/140'}
-                alt={game.game_name || 'Game'}
-                sx={{ objectFit: 'cover' }}
-              />
+              component="img"
+              sx={{
+                height: "300px",     // or your desired height
+                objectFit: "contain",  // ensures the image fills the area, cropping if necessary
+              }}
+              image={game.game_link}
+              alt={game.game_name}
+            />
               <CardContent>
                 <Typography variant="h6" sx={{ color: '#ffffff', marginBottom: '10px' }}>
                   {game.game_name}
